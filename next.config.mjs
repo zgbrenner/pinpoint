@@ -1,65 +1,27 @@
 /**
- * Content Security Policy for a static, local-first app.
+ * Pinpoint ships as a fully static export (Cloudflare Pages, or any static host).
  *
- * PRIVACY/SECURITY: `connect-src 'self'` is the key line — it forbids the page
- * from making network requests to any third-party origin, which structurally
- * prevents assessment data from being exfiltrated. We avoid all third-party
- * script/style/font origins; fonts are self-hosted (next/font) and served from
- * 'self'. 'unsafe-inline' is required for Next.js's hydration bootstrap and
- * Tailwind's injected styles; there is no user-generated HTML/script in the app,
- * so the XSS surface that 'unsafe-inline' would otherwise widen is minimal.
- * 'blob:' is allowed for img/worker so client-side DOCX/PDF export can build and
- * preview files in memory.
+ * PRIVACY/SECURITY: there is no server runtime — no API routes, no server
+ * actions, no backend storage. Security response headers (including the strict
+ * Content-Security-Policy) are served by the host via `public/_headers`, which
+ * Cloudflare Pages applies to every response. Next.js `headers()` is intentionally
+ * NOT used here because it has no effect under `output: "export"`; `_headers` is
+ * the single source of truth so dev and production stay consistent.
  */
-// 'unsafe-eval' is needed ONLY by the Next.js dev server (React Refresh / HMR).
-// Production builds keep a stricter script-src with no eval.
-const isDev = process.env.NODE_ENV !== "production";
-const scriptSrc = isDev
-  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-  : "script-src 'self' 'unsafe-inline'";
-
-const ContentSecurityPolicy = [
-  "default-src 'self'",
-  scriptSrc,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self'",
-  "connect-src 'self'",
-  "worker-src 'self' blob:",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
-].join("; ");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Emit a static site into ./out — no Node server required to host it.
+  output: "export",
+  // Cloudflare Pages serves clean directory URLs; trailing slashes make routing
+  // (and 404 handling) predictable for the exported folder-per-route layout.
+  trailingSlash: true,
+  // No next/image is used, but if it ever is, the optimizer needs a server.
+  // Keep it unoptimized so images work on a pure static host.
+  images: { unoptimized: true },
   reactStrictMode: true,
-  // Privacy: Next.js telemetry is also disabled via .env / CI, but we make the
-  // intent explicit here. Pinpoint ships no analytics or telemetry of any kind.
+  // Privacy: never advertise the framework; no analytics or telemetry anywhere.
   poweredByHeader: false,
-  // Security/privacy response headers. We deliberately avoid any third-party
-  // origins so the Content-Security-Policy can stay strict.
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "Content-Security-Policy", value: ContentSecurityPolicy },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Referrer-Policy", value: "no-referrer" },
-          // No third-party embeds, no cross-origin data leakage, no FLoC/topics.
-          {
-            key: "Permissions-Policy",
-            value:
-              "browsing-topics=(), interest-cohort=(), camera=(), microphone=(), geolocation=()",
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;

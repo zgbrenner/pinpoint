@@ -10,7 +10,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "verify:privacy": "node scripts/verify-privacy.mjs"
+    "verify:privacy": "node scripts/verify-privacy.mjs",
+    "cf:build": "next build"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.1",

@@ -221,11 +221,28 @@ the pack live.
 
 ## Deployment
 
-Pinpoint is a privacy-first static app: there is no backend, no database, and no
-API route. `npm run build` produces a standard Next.js build you can host on any
-static-friendly platform. Keep the security headers from `next.config.mjs`
-(especially the `Content-Security-Policy`) in front of the app, and serve over
-HTTPS.
+Pinpoint is a privacy-first **static** app: there is no backend, no database, and
+no API route. `next.config.mjs` sets `output: "export"`, so `npm run build`
+produces a fully static site in `./out` that you can host on any static platform.
+
+Security headers (including the strict `Content-Security-Policy`) ship in
+[`public/_headers`](./public/_headers), which is copied into `out/` at build time
+and applied by static hosts such as Cloudflare Pages. Always serve over HTTPS.
+
+### Cloudflare Pages (recommended)
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npx next build` |
+| Build output directory | `out` |
+| Production branch | `main` |
+| Environment variable | `NODE_VERSION=20` (or `22`) |
+
+Cloudflare receives ordinary static-hosting request metadata (URL, IP, user
+agent) like any web host, but **never** your assessment answers or generated
+policy pack — those stay in your browser. Do **not** enable Cloudflare Analytics,
+Pages Functions, Workers, KV/D1/R2, or Access during the MVP. Full guide:
+[`docs/DEPLOYMENT_CLOUDFLARE.md`](./docs/DEPLOYMENT_CLOUDFLARE.md).
 
 ## Roadmap
 
