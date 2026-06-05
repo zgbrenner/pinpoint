@@ -261,6 +261,11 @@ export interface PolicyPack {
   product: "pinpoint";
   generatedAt: string;
   meta: PolicyPackMeta;
+  /** The selected jurisdictions, surfaced for cover pages and the JSON export. */
+  jurisdictions: {
+    regions: Jurisdiction[];
+    usStates: string[];
+  };
   scoring: ScoringResult;
   jurisdictionRequirements: JurisdictionRequirement[];
   recommendedControls: RecommendedControl[];

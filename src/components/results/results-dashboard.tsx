@@ -9,11 +9,7 @@ import {
   ListChecks,
   ShieldCheck,
   FileText,
-  FileType2,
-  FileDown,
-  FileJson,
   ArrowLeft,
-  Lock,
   CheckCircle2,
   Circle,
 } from "lucide-react";
@@ -30,6 +26,7 @@ import { TabsList, TabTrigger } from "@/components/ui/tabs";
 import { LocalDataManager } from "@/components/privacy/local-data-manager";
 import { PackMetaFields } from "./pack-meta-fields";
 import { PolicyDocumentView } from "./policy-document-view";
+import { ExportPanel } from "./export-panel";
 import { useAssessment } from "@/components/assessment/assessment-context";
 import { generatePolicyPack } from "@/lib/policy";
 import type { RiskLevel, Severity } from "@/lib/policy/types";
@@ -82,22 +79,44 @@ export function ResultsDashboard() {
     assessment.aiTools.aiTools.length === 0 &&
     assessment.sensitiveData.sensitiveData.length === 0;
 
-  // Browser-only JSON export. PRIVACY: serialized in-page and downloaded
-  // directly from memory — never sent to a server.
-  const downloadJson = React.useCallback(() => {
-    const blob = new Blob([JSON.stringify(pack, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pinpoint-policy-pack-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [pack]);
-
   if (!hydrated) {
-    return <div className="container py-10 text-sm text-muted-foreground">Loading…</div>;
+    return (
+      <div className="container py-10">
+        <div className="mx-auto max-w-md animate-pulse space-y-4">
+          <div className="h-8 w-2/3 rounded bg-secondary" />
+          <div className="h-32 rounded-lg bg-secondary" />
+          <div className="h-24 rounded-lg bg-secondary" />
+        </div>
+      </div>
+    );
+  }
+
+  // Dedicated empty state — clearer than a half-built dashboard.
+  if (isEmpty) {
+    return (
+      <div className="container py-16">
+        <Card className="mx-auto max-w-lg text-center">
+          <CardContent className="flex flex-col items-center gap-4 p-10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-primary">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight">
+                Nothing to generate yet
+              </h1>
+              <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                Your assessment is empty, so there&apos;s no meaningful policy pack
+                to build. Answer a few questions — it takes about five minutes and
+                everything stays in your browser.
+              </p>
+            </div>
+            <Button asChild>
+              <Link href="/assessment">Start the assessment</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -117,18 +136,6 @@ export function ResultsDashboard() {
           </Link>
         </Button>
       </div>
-
-      {isEmpty && (
-        <Card className="border-amber-300 bg-amber-50">
-          <CardContent className="flex items-center gap-3 p-4 text-sm">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <span>
-              This assessment looks empty. Head back and answer a few questions for
-              a meaningful policy pack.
-            </span>
-          </CardContent>
-        </Card>
-      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="space-y-6">
@@ -352,52 +359,7 @@ export function ResultsDashboard() {
         {/* Sidebar */}
         <aside className="space-y-6">
           <PackMetaFields />
-
-          {/* Export */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <FileDown className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base">Export</CardTitle>
-              </div>
-              <CardDescription>
-                JSON export is available now. Markdown, DOCX, and PDF arrive next.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button className="w-full justify-start" onClick={downloadJson}>
-                <FileJson className="h-4 w-4" />
-                Download policy pack (JSON)
-              </Button>
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <FileText className="h-4 w-4" />
-                Export Markdown
-                <Badge variant="secondary" className="ml-auto">
-                  Coming soon
-                </Badge>
-              </Button>
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <FileType2 className="h-4 w-4" />
-                Export DOCX
-                <Badge variant="secondary" className="ml-auto">
-                  Coming soon
-                </Badge>
-              </Button>
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <FileDown className="h-4 w-4" />
-                Export PDF
-                <Badge variant="secondary" className="ml-auto">
-                  Coming soon
-                </Badge>
-              </Button>
-              <p className="flex items-start gap-2 pt-1 text-xs text-muted-foreground">
-                <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                Exports are built in your browser and downloaded directly — never via
-                a server.
-              </p>
-            </CardContent>
-          </Card>
-
+          <ExportPanel pack={pack} />
           <LocalDataManager />
         </aside>
       </div>

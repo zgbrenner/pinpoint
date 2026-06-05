@@ -96,6 +96,10 @@ export function generateFromInput(input: EngineInput): PolicyPack {
     // Deterministic except for this timestamp; consumers may ignore it.
     generatedAt: new Date().toISOString(),
     meta: input.meta,
+    jurisdictions: {
+      regions: input.jurisdiction.regions,
+      usStates: input.jurisdiction.usStates,
+    },
     scoring,
     jurisdictionRequirements: requirements,
     recommendedControls: controls,

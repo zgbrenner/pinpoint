@@ -84,11 +84,42 @@ npm run dev      # http://localhost:3000
 Other scripts:
 
 ```bash
-npm run lint       # ESLint (next/core-web-vitals)
-npm run typecheck  # tsc --noEmit
-npm run test       # Vitest unit tests
-npm run build      # production build
+npm run lint            # ESLint (next/core-web-vitals)
+npm run typecheck       # tsc --noEmit
+npm run test            # Vitest unit tests
+npm run build           # production build
+npm run verify:privacy  # static privacy checks (no API routes / analytics, etc.)
 ```
+
+## Export formats
+
+From the results dashboard you can download the full policy pack — all built
+**client-side from local state**, never via a server:
+
+- **DOCX** (`docx`) — cover page, table of contents, numbered sections,
+  headings, tables for the tool and data-handling matrices, the attestation
+  block, and a page-numbered footer.
+- **PDF** (`jsPDF` + `jspdf-autotable`) — cover page, table of contents,
+  readable typography, section breaks, tables, and page numbers.
+- **JSON** — the complete structured `PolicyPack` object for integration.
+
+Both DOCX and PDF libraries are **dynamically imported**, so they load only when
+you export and never bloat the initial page.
+
+## Privacy & security docs
+
+- [`docs/PRIVACY_ARCHITECTURE.md`](./docs/PRIVACY_ARCHITECTURE.md) — data flow,
+  what is/ isn't collected, storage, deletion, no-retention promise, threat
+  model, and limitations.
+- [`docs/LEGAL_DISCLAIMER.md`](./docs/LEGAL_DISCLAIMER.md) — not legal advice;
+  outputs are drafts; review with counsel.
+- [`SECURITY.md`](./SECURITY.md) — how to report vulnerabilities; local-only
+  design.
+
+A strict **Content Security Policy** (`connect-src 'self'`) ships in
+`next.config.mjs`, structurally blocking third-party network requests. The app
+bundles **no third-party scripts** and **no remote fonts** (Inter is self-hosted
+via `next/font`).
 
 ## Project structure
 
@@ -121,6 +152,16 @@ src/
       register.ts            # Shadow-AI risk register builder
       generator.ts           # All 11 policy documents
       index.ts               # Orchestration (assessment → PolicyPack)
+    export/                  # Client-side document export
+      model.ts               # PolicyPack → presentation-agnostic export model
+      docx.ts                # DOCX builder (dynamic import of `docx`)
+      pdf.ts                 # PDF builder (dynamic import of `jspdf`)
+      index.ts               # download helpers (DOCX / PDF / JSON)
+scripts/
+  verify-privacy.mjs         # Standalone privacy verification
+docs/
+  PRIVACY_ARCHITECTURE.md
+  LEGAL_DISCLAIMER.md
 ```
 
 ## Policy engine design
@@ -178,11 +219,21 @@ the pack live.
 > output before adoption. A future, optional local WebLLM mode may enrich
 > drafting, but the MVP works fully offline/static after install.
 
+## Deployment
+
+Pinpoint is a privacy-first static app: there is no backend, no database, and no
+API route. `npm run build` produces a standard Next.js build you can host on any
+static-friendly platform. Keep the security headers from `next.config.mjs`
+(especially the `Content-Security-Policy`) in front of the app, and serve over
+HTTPS.
+
 ## Roadmap
 
-- **Next:** Markdown / DOCX / PDF export (rendered and downloaded client-side;
-  JSON export already ships).
-- Optional, fully local WebLLM drafting to enrich the deterministic templates.
+- **Done:** deterministic policy engine, results dashboard, and client-side
+  DOCX / PDF / JSON export.
+- **Next:** Markdown export and richer document theming.
+- Optional, fully local WebLLM drafting to enrich the deterministic templates
+  (still offline, still no server).
 - Optional, fully local import/export of a draft as an encrypted file.
 - **Optional desktop agent (future, opt-in):** a local helper for deeper,
   on-device environment discovery — strictly local, no cloud, and never

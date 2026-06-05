@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Lock } from "lucide-react";
 import "./globals.css";
 
 // next/font self-hosts the font at build time — no runtime request to Google,
@@ -29,11 +29,19 @@ export default function RootLayout({
               <ShieldCheck className="h-5 w-5 text-primary" />
               <span>Pinpoint</span>
             </Link>
-            <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/#how-it-works" className="hover:text-foreground">
+            <nav className="flex items-center gap-3 text-sm text-muted-foreground sm:gap-6">
+              {/* Persistent local-only assurance, visible on every page. */}
+              <span
+                className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800 sm:inline-flex"
+                title="Your data stays in this browser. No accounts, no uploads, no tracking."
+              >
+                <Lock className="h-3 w-3" />
+                Local-only
+              </span>
+              <Link href="/#how-it-works" className="hidden hover:text-foreground sm:inline">
                 How it works
               </Link>
-              <Link href="/#privacy" className="hover:text-foreground">
+              <Link href="/#privacy" className="hidden hover:text-foreground sm:inline">
                 Privacy
               </Link>
               <Link
