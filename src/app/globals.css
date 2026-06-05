@@ -3,25 +3,38 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * Pinpoint "secure instrument" theme — a professional, boardroom-ready take
+   * on the local-first product: deep navy primary, dark ink console surfaces,
+   * a deep petrol-teal signal accent, sharp corners, and hairline-bordered
+   * cards. Space Grotesk display + JetBrains Mono labels (see layout fonts).
+   */
   :root {
-    --background: 210 40% 99%;
-    --foreground: 222 47% 11%;
+    --background: 220 33% 98%;
+    --foreground: 222 44% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --primary: 222 47% 24%;
+    --card-foreground: 222 44% 14%;
+    --primary: 222 45% 20%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 24%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 94%;
-    --accent-foreground: 222 47% 24%;
+    --secondary: 215 32% 95%;
+    --secondary-foreground: 222 44% 22%;
+    --muted: 215 32% 95%;
+    --muted-foreground: 218 16% 46%;
+    --accent: 214 32% 92%;
+    --accent-foreground: 222 44% 22%;
     --destructive: 0 72% 45%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 88%;
-    --input: 214 32% 86%;
-    --ring: 222 47% 40%;
-    --radius: 0.6rem;
+    --border: 215 26% 89%;
+    --input: 215 24% 85%;
+    /* Dark navy console surface for hero / gauges / share cover. */
+    --ink: 222 44% 13%;
+    --ink-foreground: 210 40% 97%;
+    /* Deep petrol-teal signal accent (~#0f766e). */
+    --signal: 175 78% 26%;
+    --signal-foreground: 0 0% 100%;
+    --ring: 175 78% 30%;
+    /* Sharp corners — the "instrument" feel. */
+    --radius: 0.25rem;
   }
 }
 
@@ -32,5 +45,19 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    letter-spacing: -0.022em;
+  }
+}
+
+@layer components {
+  /* Monospace, uppercase technical caption used across the UI. */
+  .pp-eyebrow {
+    @apply font-mono text-[11.5px] font-medium uppercase text-muted-foreground;
+    letter-spacing: 0.1em;
   }
 }

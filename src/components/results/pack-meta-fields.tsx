@@ -28,7 +28,7 @@ export function PackMetaFields() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Pencil className="h-5 w-5 text-primary" />
+          <Pencil className="h-5 w-5 text-signal" />
           <CardTitle className="text-base">Policy details</CardTitle>
         </div>
         <CardDescription>

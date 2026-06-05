@@ -12,12 +12,30 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        // Inter (body), Space Grotesk (display headings), JetBrains Mono
+        // (technical eyebrows/labels) — all self-hosted via next/font.
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-sans)", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // "Secure instrument" accent — deep petrol teal used for gauges, the
+        // local-only signal, and key calls to action.
+        signal: {
+          DEFAULT: "hsl(var(--signal))",
+          foreground: "hsl(var(--signal-foreground))",
+        },
+        // Dark navy console surfaces (hero, gauges, share cover).
+        ink: {
+          DEFAULT: "hsl(var(--ink))",
+          foreground: "hsl(var(--ink-foreground))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -45,8 +63,13 @@ const config: Config = {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 1px)",
+        sm: "max(2px, calc(var(--radius) - 2px))",
+      },
+      boxShadow: {
+        // Premium hairline + soft lift used on cards in the bolder direction.
+        card: "0 1px 2px hsl(222 47% 20% / 0.05), 0 0 0 1px hsl(214 32% 88% / 0.6)",
+        pop: "0 18px 48px -16px hsl(222 47% 20% / 0.28)",
       },
     },
   },
