@@ -110,15 +110,79 @@ src/
     schemas.ts               # Zod schemas (local-only validation)
     db.ts                    # Dexie local persistence + delete-all
     scan.ts                  # Browser capability scan (non-unique)
-    scoring.ts               # Transparent heuristic risk scoring
     catalog.ts               # Static option lists
+    policy/                  # The deterministic policy engine (see below)
+      types.ts               # Typed model (profiles + output artifacts)
+      tools.ts               # AI-tool classification + default tiering
+      domains.ts             # High-stakes domain detection
+      jurisdictions.ts       # Seed jurisdiction/framework library + selection
+      controls.ts            # Recommended-control library + selection
+      scoring.ts             # Maturity + inherent-risk scoring engine
+      register.ts            # Shadow-AI risk register builder
+      generator.ts           # All 11 policy documents
+      index.ts               # Orchestration (assessment → PolicyPack)
 ```
+
+## Policy engine design
+
+The policy engine in `src/lib/policy/` turns an assessment into a complete
+policy pack **deterministically and entirely in the browser** — no LLM calls,
+no network, no server. The same input always yields the same output (apart from
+a `generatedAt` timestamp), which makes it fully unit-testable.
+
+**Pipeline** (`generatePolicyPack(assessment, overrides?)`):
+
+1. **Derive** a normalized `EngineInput` from the local assessment. Free-text AI
+   tools are classified into categories (general LLM, coding assistant, meeting
+   transcription, browser extension, image generation, search, internal) and
+   flagged as free/public vs. enterprise. Use cases, sensitive data, and
+   departments are mapped to high-stakes **domains** (HR, credit, insurance,
+   healthcare, legal, education, finance, customer decisioning, biometrics,
+   children/teens, automated decision-making).
+2. **Select jurisdiction requirements** from the seed library. Covered:
+   - **US** — CCPA/CPRA, VCDPA, CPA, CTDPA, UCPA plus all other comprehensive
+     state regimes (TX, OR, MT, IA, DE, NJ, NH, NE, IN, TN, FL, MN, MD, RI, KY)
+     as configurable entries, and a generic *US state common pattern* module.
+   - **EU** — GDPR, EU AI Act.
+   - **UK** — UK GDPR / DPA 2018, ICO AI guidance.
+   - **Canada** — PIPEDA, Québec Law 25, Canadian regulators' generative-AI
+     principles.
+   - **Frameworks** (always surfaced) — NIST AI RMF, NIST Privacy Framework, and
+     an AIME-style organizational AI management self-assessment.
+3. **Score** a governance **maturity score** (0–100, higher is better) and an
+   **inherent risk score**, combined into an overall **risk level**
+   (Low / Medium / High / Critical), plus the **top 10 risk flags**. Signals
+   include tool count/type, free/public tools, coding assistants, meeting bots,
+   browser extensions, sensitive data, high-stakes domains, jurisdictions, and
+   whether an approval process and approved-tool list exist.
+4. **Select recommended controls** (with priority and present/missing status)
+   and build a **Shadow-AI risk register** with inherent/residual ratings.
+5. **Generate the policy pack documents**:
+   AI Acceptable Use Policy · Approved/Restricted/Blocked Tool Matrix ·
+   Data Handling Matrix · Role-Based AI Use Rules · AI Vendor Review Checklist ·
+   Employee AI Use Attestation · Shadow AI Risk Register · Guardrail Roadmap ·
+   Board/GC Summary Memo · Privacy + Data Retention Statement ·
+   Legal Review Notes / No Legal Advice Disclaimer.
+6. **Export** the whole pack as a JSON object (`schemaVersion`, `product`,
+   scoring, requirements, controls, register, documents) for future
+   integration — downloaded directly from browser memory.
+
+The results dashboard renders the scorecard, risk flags, jurisdiction coverage,
+controls, and a tabbed preview of every document, with edit-in-browser fields
+(company name, owner, reviewer, effective date, approved tools) that regenerate
+the pack live.
+
+> **Not legal advice.** The engine produces *policy coverage and control
+> recommendations* from deterministic templates. It does not provide legal
+> advice and does not guarantee compliance. Have qualified counsel review any
+> output before adoption. A future, optional local WebLLM mode may enrich
+> drafting, but the MVP works fully offline/static after install.
 
 ## Roadmap
 
-- **Next:** in-browser policy generation and Markdown/DOCX/PDF export
-  (everything rendered and downloaded client-side).
-- Richer, jurisdiction-specific control libraries.
+- **Next:** Markdown / DOCX / PDF export (rendered and downloaded client-side;
+  JSON export already ships).
+- Optional, fully local WebLLM drafting to enrich the deterministic templates.
 - Optional, fully local import/export of a draft as an encrypted file.
 - **Optional desktop agent (future, opt-in):** a local helper for deeper,
   on-device environment discovery — strictly local, no cloud, and never
