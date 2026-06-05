@@ -40,6 +40,8 @@ export const companyProfileSchema = z.object({
 /** Step 2 — Jurisdictions where the company operates / has staff or customers. */
 export const jurisdictionsSchema = z.object({
   jurisdictions: z.array(jurisdictionSchema).default([]),
+  /** Optional US state codes (e.g. "CA", "VA") for state-privacy specificity. */
+  usStates: z.array(z.string().trim().max(4)).default([]),
 });
 
 /** Step 3 — AI tools in use. Free-form tags plus a curated checklist. */
@@ -72,6 +74,20 @@ export const riskWorkflowSchema = z.object({
   riskTolerance: z.enum(RISK_TOLERANCE).default("balanced"),
   approvalWorkflow: z.enum(APPROVAL_WORKFLOWS).default("manager"),
   humanReviewRequired: z.boolean().default(true),
+  /** Whether the organization already maintains an approved-AI-tool list. */
+  approvedToolListExists: z.boolean().default(false),
+});
+
+/**
+ * Editable policy-pack metadata. Surfaced as in-browser fields on the results
+ * dashboard (owner, reviewer, effective date, approved tools) and stays local.
+ */
+export const packMetaSchema = z.object({
+  policyOwner: z.string().trim().max(120).default(""),
+  reviewer: z.string().trim().max(120).default(""),
+  effectiveDate: z.string().trim().max(40).default(""),
+  version: z.string().trim().max(20).default("1.0"),
+  approvedTools: z.array(z.string().trim().max(80)).default([]),
 });
 
 /** The full assessment document held locally. */
@@ -89,6 +105,7 @@ export const assessmentSchema = z.object({
   departments: departmentsSchema.default({}),
   useCases: useCasesSchema.default({}),
   riskWorkflow: riskWorkflowSchema.default({}),
+  packMeta: packMetaSchema.default({}),
 });
 
 export type Assessment = z.infer<typeof assessmentSchema>;

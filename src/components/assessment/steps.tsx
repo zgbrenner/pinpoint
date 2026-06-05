@@ -20,6 +20,7 @@ import {
   SENSITIVE_DATA_OPTIONS,
   DEPARTMENT_OPTIONS,
   USE_CASE_OPTIONS,
+  US_STATE_OPTIONS,
 } from "@/lib/catalog";
 
 const JURISDICTION_LABELS: Record<Jurisdiction, string> = {
@@ -96,12 +97,22 @@ export function CompanyProfileStep() {
 
 export function JurisdictionsStep() {
   const { assessment, update } = useAssessment();
-  const selected = assessment.jurisdictions.jurisdictions;
-  const toggle = (j: Jurisdiction) =>
+  const j = assessment.jurisdictions;
+  const selected = j.jurisdictions;
+  const states = j.usStates ?? [];
+  const toggle = (region: Jurisdiction) =>
     update("jurisdictions", {
-      jurisdictions: selected.includes(j)
-        ? selected.filter((x) => x !== j)
-        : [...selected, j],
+      ...j,
+      jurisdictions: selected.includes(region)
+        ? selected.filter((x) => x !== region)
+        : [...selected, region],
+    });
+  const toggleState = (code: string) =>
+    update("jurisdictions", {
+      ...j,
+      usStates: states.includes(code)
+        ? states.filter((x) => x !== code)
+        : [...states, code],
     });
   return (
     <div className="space-y-4">
@@ -109,26 +120,54 @@ export function JurisdictionsStep() {
         Select every region where you have staff, customers, or data subjects.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        {JURISDICTIONS.map((j) => {
-          const active = selected.includes(j);
+        {JURISDICTIONS.map((region) => {
+          const active = selected.includes(region);
           return (
             <button
-              key={j}
+              key={region}
               type="button"
-              onClick={() => toggle(j)}
+              onClick={() => toggle(region)}
               aria-pressed={active}
               className={`flex items-center justify-between rounded-lg border p-4 text-left transition-colors ${
-                active
-                  ? "border-primary bg-secondary"
-                  : "border-input hover:bg-accent"
+                active ? "border-primary bg-secondary" : "border-input hover:bg-accent"
               }`}
             >
-              <span className="font-medium">{JURISDICTION_LABELS[j]}</span>
-              <span className="text-xs text-muted-foreground">{j}</span>
+              <span className="font-medium">{JURISDICTION_LABELS[region]}</span>
+              <span className="text-xs text-muted-foreground">{region}</span>
             </button>
           );
         })}
       </div>
+
+      {selected.includes("US") && (
+        <div className="space-y-2 rounded-lg border border-border bg-secondary/30 p-4">
+          <p className="text-sm font-medium">US state privacy laws (optional)</p>
+          <p className="text-xs text-muted-foreground">
+            Pick specific states to tailor coverage. Leave blank to use the common
+            US state pattern.
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {US_STATE_OPTIONS.map((s) => {
+              const active = states.includes(s.code);
+              return (
+                <button
+                  key={s.code}
+                  type="button"
+                  onClick={() => toggleState(s.code)}
+                  aria-pressed={active}
+                  className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-input bg-background hover:bg-accent"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -275,6 +314,19 @@ export function RiskWorkflowStep() {
           }
         />
         Require human review for higher-impact AI outputs
+      </label>
+
+      <label className="flex items-center gap-2 text-sm">
+        <Checkbox
+          checked={r.approvedToolListExists}
+          onChange={(e) =>
+            update("riskWorkflow", {
+              ...r,
+              approvedToolListExists: e.target.checked,
+            })
+          }
+        />
+        We already maintain an approved AI tool list
       </label>
     </div>
   );
