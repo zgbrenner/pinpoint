@@ -126,6 +126,16 @@ export function BrowserScanCard() {
               }
             />
 
+            <div className="mt-3 rounded-md border border-border bg-secondary/30 p-3">
+              <p className="text-xs font-medium">Limitations of this scan</p>
+              <ul className="mt-1 ml-4 list-disc space-y-0.5 text-xs text-muted-foreground">
+                <li>Values are coarse and shared by many users — not a unique identifier.</li>
+                <li>No fingerprint hash is computed; results are not stored or sent.</li>
+                <li>It cannot see your files, other tabs, history, or installed apps.</li>
+                <li>Permission states are read without prompting or activating any sensor.</li>
+              </ul>
+            </div>
+
             <div className="pt-3">
               <Button size="sm" variant="ghost" onClick={doScan} disabled={loading}>
                 <RefreshCw className="h-4 w-4" />
