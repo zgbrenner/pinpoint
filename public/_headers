@@ -1,0 +1,17 @@
+# Cloudflare Pages security headers for Pinpoint (static, local-first).
+#
+# Files in /public are copied verbatim into the static export (./out), so this
+# file ships with the build and Cloudflare applies it to every response.
+#
+# CSP notes:
+#  - connect-src 'self' structurally blocks third-party network egress, so
+#    assessment data cannot be exfiltrated from the page.
+#  - 'unsafe-inline' is required for Next.js hydration and Tailwind styles; the
+#    app renders no user-supplied HTML/script, so the practical XSS surface is low.
+#  - blob: (img/worker) lets client-side DOCX/PDF export build files in memory.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=(), hid=()
+  X-Frame-Options: DENY
