@@ -55,13 +55,16 @@ function MaturityGauge({ score }: { score: number }) {
           cy="50"
           r="42"
           fill="none"
-          stroke="hsl(var(--primary))"
+          stroke="hsl(var(--signal))"
           strokeWidth="10"
           strokeLinecap="round"
           strokeDasharray={`${(score / 100) * 264} 264`}
         />
       </svg>
-      <span className="absolute text-2xl font-semibold">{score}</span>
+      <div className="absolute flex flex-col items-center">
+        <span className="font-display text-2xl font-semibold">{score}</span>
+        <span className="pp-eyebrow text-[9px]">maturity</span>
+      </div>
     </div>
   );
 }
@@ -123,10 +126,13 @@ export function ResultsDashboard() {
     <div className="container space-y-6 py-10">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Your policy pack</h1>
+          <p className="pp-eyebrow">Generated locally · Not legal advice</p>
+          <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">
+            Your policy pack
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Generated locally in your browser from your assessment. Informational
-            guidance only — not legal advice.
+            Generated in your browser from your assessment. Informational
+            guidance only.
           </p>
         </div>
         <Button asChild variant="outline">
@@ -143,32 +149,47 @@ export function ResultsDashboard() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Gauge className="h-5 w-5 text-primary" />
+                <Gauge className="h-5 w-5 text-signal" />
                 <CardTitle className="text-base">Scorecard</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap items-center gap-6">
+              <div className="flex flex-wrap items-center gap-x-7 gap-y-5">
                 <div className="flex items-center gap-4">
                   <MaturityGauge score={pack.scoring.maturityScore} />
                   <div>
                     <p className="text-sm text-muted-foreground">Policy maturity</p>
                     <p className="text-lg font-semibold">
-                      {pack.scoring.maturityScore}/100
+                      {pack.scoring.maturityScore}
+                      <span className="text-sm font-normal text-muted-foreground">
+                        /100
+                      </span>
                     </p>
+                    <p className="text-xs text-muted-foreground">Higher is better</p>
                   </div>
                 </div>
-                <div className="h-12 w-px bg-border" aria-hidden />
+                <div className="hidden h-12 w-px bg-border sm:block" aria-hidden />
                 <div>
                   <p className="text-sm text-muted-foreground">Overall risk level</p>
                   <Badge
                     variant={RISK_VARIANT[pack.scoring.riskLevel]}
-                    className="mt-1 text-sm"
+                    className="mt-1.5"
                   >
                     {pack.scoring.riskLevel}
                   </Badge>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Inherent risk score {pack.scoring.inherentRiskScore}/100
+                </div>
+                <div className="hidden h-12 w-px bg-border sm:block" aria-hidden />
+                <div className="min-w-[180px] flex-1">
+                  <p className="text-sm text-muted-foreground">Inherent risk</p>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className="h-full rounded-full bg-destructive"
+                      style={{ width: `${pack.scoring.inherentRiskScore}%` }}
+                    />
+                  </div>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    {pack.missingControls.length} of{" "}
+                    {pack.recommendedControls.length} recommended controls missing
                   </p>
                 </div>
               </div>
@@ -179,7 +200,7 @@ export function ResultsDashboard() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-primary" />
+                <AlertTriangle className="h-5 w-5 text-signal" />
                 <CardTitle className="text-base">
                   Top risk flags ({pack.scoring.topRiskFlags.length})
                 </CardTitle>
@@ -216,7 +237,7 @@ export function ResultsDashboard() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <Globe2 className="h-5 w-5 text-primary" />
+                <Globe2 className="h-5 w-5 text-signal" />
                 <CardTitle className="text-base">
                   Jurisdiction & framework coverage
                 </CardTitle>
@@ -253,7 +274,7 @@ export function ResultsDashboard() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-primary" />
+                <ShieldCheck className="h-5 w-5 text-signal" />
                 <CardTitle className="text-base">Recommended controls</CardTitle>
               </div>
               <CardDescription>
@@ -299,7 +320,7 @@ export function ResultsDashboard() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
-                <ListChecks className="h-5 w-5 text-primary" />
+                <ListChecks className="h-5 w-5 text-signal" />
                 <CardTitle className="text-base">Policy pack</CardTitle>
               </div>
               <CardDescription>

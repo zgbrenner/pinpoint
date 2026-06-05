@@ -103,15 +103,15 @@ export function AssessmentWizard() {
       <div className="space-y-6">
         {/* Progress */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">
+          <div className="flex items-center justify-between">
+            <span className="pp-eyebrow">
               Step {step + 1} of {STEPS.length}
             </span>
-            <span className="text-muted-foreground">{progress}% complete</span>
+            <span className="pp-eyebrow">{progress}% complete</span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
             <div
-              className="h-full rounded-full bg-primary transition-all"
+              className="h-full rounded-full bg-signal transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -142,7 +142,7 @@ export function AssessmentWizard() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={generate}>
+            <Button variant="signal" onClick={generate}>
               <Sparkles className="h-4 w-4" />
               Generate policy pack
             </Button>
@@ -163,10 +163,12 @@ export function AssessmentWizard() {
                 }`}
               >
                 <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs ${
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border font-mono text-[10px] ${
                     i < step
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border"
+                      ? "border-signal bg-signal text-signal-foreground"
+                      : i === step
+                        ? "border-primary text-foreground"
+                        : "border-border text-muted-foreground"
                   }`}
                 >
                   {i < step ? <Check className="h-3 w-3" /> : i + 1}

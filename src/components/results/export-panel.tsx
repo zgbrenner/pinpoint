@@ -39,7 +39,7 @@ export function ExportPanel({ pack }: { pack: PolicyPack }) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <FileDown className="h-5 w-5 text-primary" />
+          <FileDown className="h-5 w-5 text-signal" />
           <CardTitle className="text-base">Export policy pack</CardTitle>
         </div>
         <CardDescription>

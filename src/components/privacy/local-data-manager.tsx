@@ -55,7 +55,7 @@ export function LocalDataManager() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-primary" />
+          <ShieldCheck className="h-5 w-5 text-signal" />
           <CardTitle className="text-base">Local data</CardTitle>
         </div>
         <CardDescription>
