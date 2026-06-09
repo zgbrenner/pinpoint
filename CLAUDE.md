@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-## 1. Think Before Coding
+## 1. Think Before Coding or Editing
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
@@ -29,7 +29,7 @@ Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, sim
 
 When editing existing code:
 
-- Don't "improve" adjacent code, comments, or formatting.
+- Don't "improve" adjacent code, text, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
 - If you notice unrelated dead code, mention it — don't delete it.
@@ -60,7 +60,3 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
----
-
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
